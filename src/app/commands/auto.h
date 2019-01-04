@@ -9,6 +9,7 @@
 
 #include "app/commands/command.h"
 #include "app/commands/params.h"
+#include "obs/signal.h"
 
 #include <vector>
 

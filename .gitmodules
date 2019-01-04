@@ -63,3 +63,6 @@
 [submodule "third_party/lua"]
 	path = third_party/lua
 	url = https://github.com/aseprite/lua
+[submodule "third_party/better-enum"]
+	path = third_party/better-enum
+	url = https://github.com/aseprite/better-enums.git

@@ -1,4 +1,5 @@
 // Aseprite
+// Copyright (C) 2019  Igara Studio S.A.
 // Copyright (C) 2001-2018  David Capello
 //
 // This program is distributed under the terms of
@@ -32,34 +33,26 @@
 namespace app {
 
 MoveMaskCommand::MoveMaskCommand()
-  : Command(CommandId::MoveMask(), CmdRecordableFlag)
+  : AutoLoadParamsCommand(CommandId::MoveMask(), CmdRecordableFlag)
 {
 }
 
 void MoveMaskCommand::onLoadParams(const Params& params)
 {
-  std::string target = params.get("target");
-  if (target == "boundaries") m_target = Boundaries;
-  else if (target == "content") m_target = Content;
-
-  if (params.has_param("wrap"))
-    m_wrap = params.get_as<bool>("wrap");
-  else
-    m_wrap = false;
-
+  AutoLoadParamsCommand::onLoadParams(params);
   m_moveThing.onLoadParams(params);
 }
 
 bool MoveMaskCommand::onEnabled(Context* context)
 {
-  switch (m_target) {
+  switch (m_target()) {
 
-    case Boundaries:
+    case Target::Boundaries:
       return context->checkFlags(ContextFlags::HasActiveDocument |
                                  ContextFlags::HasVisibleMask);
 
-    case Content:
-      if (m_wrap)
+    case Target::Content:
+      if (m_wrap())
         return context->checkFlags(ContextFlags::ActiveDocumentIsWritable |
                                    ContextFlags::HasVisibleMask |
                                    ContextFlags::HasActiveImage |
@@ -76,9 +69,9 @@ void MoveMaskCommand::onExecute(Context* context)
 {
   gfx::Point delta = m_moveThing.getDelta(context);
 
-  switch (m_target) {
+  switch (m_target()) {
 
-    case Boundaries: {
+    case Target::Boundaries: {
       ContextWriter writer(context);
       Doc* document(writer.document());
       {
@@ -93,8 +86,8 @@ void MoveMaskCommand::onExecute(Context* context)
       break;
     }
 
-    case Content:
-      if (m_wrap) {
+    case Target::Content:
+      if (m_wrap()) {
         ContextWriter writer(context);
         if (writer.cel()) {
           // Rotate content
@@ -115,9 +108,9 @@ void MoveMaskCommand::onExecute(Context* context)
 std::string MoveMaskCommand::onGetFriendlyName() const
 {
   std::string content;
-  switch (m_target) {
-    case Boundaries: content = Strings::commands_MoveMask_Boundaries(); break;
-    case Content: content = Strings::commands_MoveMask_Content(); break;
+  switch (m_target()) {
+    case Target::Boundaries: content = Strings::commands_MoveMask_Boundaries(); break;
+    case Target::Content: content = Strings::commands_MoveMask_Content(); break;
   }
   return fmt::format(getBaseFriendlyName(),
                      content, m_moveThing.getFriendlyString());

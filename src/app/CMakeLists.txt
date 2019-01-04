@@ -625,6 +625,7 @@ target_link_libraries(app-lib
 
 # Directory where generated files by "gen" utility will stay.
 target_include_directories(app-lib PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(app-lib PRIVATE ${BETTER_ENUM_DIR})
 
 if(REQUIRE_CURL)
   target_link_libraries(app-lib net-lib)

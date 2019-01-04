@@ -1,4 +1,5 @@
 // Aseprite
+// Copyright (C) 2019  Igara Studio S.A.
 // Copyright (C) 2001-2017  David Capello
 //
 // This program is distributed under the terms of
@@ -58,8 +59,8 @@ namespace app {
     }
 
     template<typename T>
-    const T get_as(const char* name) const {
-      T value = T();
+    const T get_as(const char* name, const T& defaultValue = T()) const {
+      T value = defaultValue;
       auto it = m_params.find(name);
       if (it != m_params.end()) {
         std::istringstream stream(it->second);

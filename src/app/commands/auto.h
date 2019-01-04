@@ -22,7 +22,7 @@ public:
 
   obs::signal<void(const Params& params)> LoadParams;
 
-private:
+protected:
   void onLoadParams(const Params& params) override {
     LoadParams(params);
   }
@@ -34,12 +34,13 @@ public:
   AutoParam(AutoLoadParamsCommand* command,
             const T& defaultValue,
             const char* key)
-    : m_defaultValue(defaultValue) {
+    : m_defaultValue(defaultValue),
+      m_value(defaultValue) {
     if (key)
       m_keys.push_back(key);
 
     command->LoadParams.connect(
-      [this](const Params& params){ onLoadParams(params); });
+      [this](const Params& params){ onLoadParam(params); });
   }
 
   AutoParam(AutoLoadParamsCommand* command,
@@ -59,14 +60,14 @@ public:
   }
 
 private:
-  void onLoadParams(const Params& params) {
-    m_value = m_defaultValue;
+  void onLoadParam(const Params& params) {
     for (auto key : m_keys) {
       if (params.has_param(key)) {
-        m_value = params.get_as<T>(key);
-        break;
+        m_value = params.get_as<T>(key, m_defaultValue);
+        return;
       }
     }
+    m_value = m_defaultValue;
   }
 
   T m_defaultValue;

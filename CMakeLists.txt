@@ -1,4 +1,5 @@
 # Aseprite
+# Copyright (C) 2019  Igara Studio S.A.
 # Copyright (C) 2001-2018  David Capello
 
 cmake_minimum_required(VERSION 3.4)
@@ -155,6 +156,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_PROFILE "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_PROFILE "${CMAKE_BINARY_DIR}/bin")
 
 set(SOURCE_DATA_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/data)
+set(BETTER_ENUM_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/better-enum)
 set(CMARK_DIR           ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cmark)
 set(CURL_DIR            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/curl)
 set(GIFLIB_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/third_party/giflib)

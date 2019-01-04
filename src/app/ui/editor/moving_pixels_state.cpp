@@ -1,4 +1,5 @@
 // Aseprite
+// Copyright (C) 2019  Igara Studio S.A.
 // Copyright (C) 2001-2018  David Capello
 //
 // This program is distributed under the terms of
@@ -495,7 +496,7 @@ void MovingPixelsState::onBeforeCommandExecution(CommandExecutionEvent& ev)
 
   // We don't need to drop the pixels if a MoveMaskCommand of Content is executed.
   if (MoveMaskCommand* moveMaskCmd = dynamic_cast<MoveMaskCommand*>(ev.command())) {
-    if (moveMaskCmd->getTarget() == MoveMaskCommand::Content) {
+    if (moveMaskCmd->getTarget() == +MoveMaskCommand::Target::Content) {
       // Do not drop pixels
       return;
     }

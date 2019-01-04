@@ -1,4 +1,5 @@
 // Aseprite
+// Copyright (C) 2019  Igara Studio S.A.
 // Copyright (C) 2001-2017  David Capello
 //
 // This program is distributed under the terms of
@@ -8,19 +9,23 @@
 #define APP_COMMANDS_CMD_EXPORT_SPRITE_SHEET_H_INCLUDED
 #pragma once
 
-#include "app/commands/command.h"
+#include "app/commands/auto.h"
 #include "app/commands/move_thing.h"
+
+#include "enum.h"
 
 namespace app {
 
-  class MoveMaskCommand : public Command {
+  BETTER_ENUM(MoveMaskCommand_Target, int, Boundaries, Content);
+
+  class MoveMaskCommand : public AutoLoadParamsCommand {
   public:
-    enum Target { Boundaries, Content };
+    typedef MoveMaskCommand_Target Target;
 
     MoveMaskCommand();
     Command* clone() const override { return new MoveMaskCommand(*this); }
 
-    Target getTarget() const { return m_target; }
+    Target getTarget() const { return m_target(); }
     gfx::Point getDelta(Context* context) const;
 
   protected:
@@ -31,9 +36,9 @@ namespace app {
     std::string onGetFriendlyName() const override;
 
   private:
-    Target m_target;
+    AutoParam<Target> m_target { this, +Target::Boundaries, "target" };
+    AutoParam<bool> m_wrap { this, false, "wrap" };
     MoveThing m_moveThing;
-    bool m_wrap;
   };
 
 } // namespace app

@@ -1,4 +1,5 @@
 // Aseprite
+// Copyright (C) 2019  Igara Studio S.A.
 // Copyright (C) 2001-2018  David Capello
 //
 // This program is distributed under the terms of
@@ -9,7 +10,7 @@
 #endif
 
 #include "app/app.h"
-#include "app/commands/command.h"
+#include "app/commands/auto.h"
 #include "app/context.h"
 #include "app/context_access.h"
 #include "app/doc.h"
@@ -581,41 +582,23 @@ private:
   bool m_dataFilenameAskOverwrite;
 };
 
-class ExportSpriteSheetCommand : public Command {
+class ExportSpriteSheetCommand : public AutoLoadParamsCommand {
 public:
   ExportSpriteSheetCommand();
   Command* clone() const override { return new ExportSpriteSheetCommand(*this); }
 
-  void setUseUI(bool useUI) { m_useUI = useUI; }
-
 protected:
-  void onLoadParams(const Params& params) override;
   bool onEnabled(Context* context) override;
   void onExecute(Context* context) override;
 
 private:
-  bool m_useUI;
-  bool m_askOverwrite;
+  AutoParam<bool> m_useUI { this, true, "ui" };
+  AutoParam<bool> m_askOverwrite { this, true, { "askOverwrite", "ask-overwrite" } };
 };
 
 ExportSpriteSheetCommand::ExportSpriteSheetCommand()
-  : Command(CommandId::ExportSpriteSheet(), CmdRecordableFlag)
-  , m_useUI(true)
-  , m_askOverwrite(true)
+  : AutoLoadParamsCommand(CommandId::ExportSpriteSheet(), CmdRecordableFlag)
 {
-}
-
-void ExportSpriteSheetCommand::onLoadParams(const Params& params)
-{
-  if (params.has_param("ui"))
-    m_useUI = params.get_as<bool>("ui");
-  else
-    m_useUI = true;
-
-  if (params.has_param("ask-overwrite"))
-    m_askOverwrite = params.get_as<bool>("ask-overwrite");
-  else
-    m_askOverwrite = true;
 }
 
 bool ExportSpriteSheetCommand::onEnabled(Context* context)
@@ -629,9 +612,9 @@ void ExportSpriteSheetCommand::onExecute(Context* context)
   Doc* document = site.document();
   Sprite* sprite = site.sprite();
   DocumentPreferences& docPref(Preferences::instance().document(document));
-  bool askOverwrite = m_askOverwrite;
+  bool askOverwrite = m_askOverwrite();
 
-  if (m_useUI && context->isUIAvailable()) {
+  if (m_useUI() && context->isUIAvailable()) {
     ExportSpriteSheetWindow window(site, docPref);
     window.openWindowInForeground();
     if (!window.ok())
